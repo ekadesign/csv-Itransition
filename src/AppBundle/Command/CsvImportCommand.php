@@ -9,6 +9,7 @@ use AppBundle\Validator\MaxPriceValidator;
 use AppBundle\Validator\Validator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -39,7 +40,7 @@ class CsvImportCommand extends ContainerAwareCommand
         $this
             ->setName('csv:import')
             ->setDescription('...')
-            ->addArgument('argument', InputArgument::OPTIONAL, 'Argument description')
+            ->addArgument('filename', InputArgument::REQUIRED, 'Name of file')
             ->addOption('option', null, InputOption::VALUE_NONE, 'Option description');
     }
 
@@ -47,12 +48,17 @@ class CsvImportCommand extends ContainerAwareCommand
     {
 
         $io = new SymfonyStyle($input, $output);
+        $serializer = new Serializer([new ObjectNormalizer()], [new CsvEncoder()]);
+try {
+    // decoding CSV contents
+    $csv = $serializer->decode(file_get_contents('csv/' . $input->getArgument('filename')), 'csv');
+}catch (Exception $e){
+    $io->title('File not found...');die;
+    throw $e;
+}
+
         $io->title('Attempting import of Feed...');
 
-        $serializer = new Serializer([new ObjectNormalizer()], [new CsvEncoder()]);
-
-        // decoding CSV contents
-        $csv = $serializer->decode(file_get_contents('csv/stock.csv'), 'csv');
 
         $io->progressStart();
 
