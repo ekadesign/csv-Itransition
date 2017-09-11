@@ -10,3 +10,6 @@ put your file to in csv folder
 then run the command php ./bin/console csv:import filename_with_extension
 ## Test
 php ./vendor/bin/simple-phpunit
+
+### Что бы я добавил
+С помощью стратегии добавил бы возможность импорта разных файлов. Вывод ошибочных кортежей в лог. Графический интерфейс с возможностью загрузки
